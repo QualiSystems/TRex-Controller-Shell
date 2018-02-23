@@ -1,0 +1,58 @@
+<Driver Description="Shell to setup and run Cisco TRex traffic" MainClass="driver.TRexControllerDriver"
+        Name="TRexControllerDriver" Version="1.0.0">
+    <Layout>
+        <Category Name="Hidden Commands">
+            <Command Name="keep_alive" DisplayName="Keep Alive" Tags="" Description="" EnableCancellation="true"/>
+            <Command Name="cleanup_reservation" DisplayName="Cleanup Reservation" Tags="" Description="" EnableCancellation="true"/>
+        </Category>
+
+        <Command Name="upload_server_config"
+                 DisplayName="Upload Server Configuration"
+                 Description="Upload current TRex server configuration file to remote FTP/TFTP Server">
+            <Parameters>
+                <Parameter Name="config_file_url" Type="String" Mandatory="True"
+                           DisplayName="URL Path"
+                           Description="The path in which the current TRex Server configuration file will be saved."/>
+            </Parameters>
+        </Command>
+
+        <Command Name="download_server_config"
+                 DisplayName="Download Server Configuration"
+                 Description="Download configuration file from remote FTP/TFTP Server and set it as TRex Server configuration file">
+            <Parameters>
+                <Parameter Name="config_file_url" Type="String" Mandatory="True"
+                           DisplayName="URL Path"
+                           Description="The path to the TRex Server configuration file, including the configuration file name."/>
+            </Parameters>
+        </Command>
+
+        <Command Name="load_test_config" DisplayName="Load Test Configuration" Description="Load test configuration">
+            <Parameters>
+                <Parameter Name="config_file_url" Type="String" Mandatory="True"
+                           DisplayName="URL Path"
+                           Description="The path to the test configuration file, including the configuration file name."/>
+            </Parameters>
+        </Command>
+        <Command Name="start_traffic" DisplayName="Start Traffic" Description="Start test for current configuration">
+            <Parameters>
+                <Parameter Name="test_file_name" Type="String" Mandatory="True"
+                           DisplayName="Test file name"
+                           Description="Full name (with extension) of test configuration file"/>
+            </Parameters>
+        </Command>
+        <Command Name="stop_traffic" DisplayName="Stop Traffic" Description="Stop running test"/>
+        <Command Name="get_results" DisplayName="Get Result" Description="Get test result file and attach it to the reservation"/>
+    </Layout>
+</Driver>
+
+
+
+<!--upload_server_config-->
+<!--download_server_config-->
+<!--load_test_config-->
+<!--start_traffic-->
+<!--stop_traffic-->
+<!--get_results-->
+<!--cleanup_reservation-->
+<!--cleanup-->
+<!--keep_alive-->

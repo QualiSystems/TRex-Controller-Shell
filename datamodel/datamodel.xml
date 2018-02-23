@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataModelInfo
+        xmlns="http://schemas.qualisystems.com/ResourceManagement/DataModelSchema.xsd">
+    <Attributes>
+        <AttributeInfo Name="Controller Address" Type="String" DefaultValue="" IsReadOnly="false"
+                       Description="The IP address of the traffic server. Relevant only in case an external server is configured.">
+            <Rules>
+                <Rule Name="Configuration"/>
+            </Rules>
+        </AttributeInfo>
+        <AttributeInfo Name="Password" Type="Password" DefaultValue="" IsReadOnly="false" Description="">
+            <Rules>
+                <Rule Name="Configuration"/>
+            </Rules>
+        </AttributeInfo>
+        <AttributeInfo Name="User" Type="String" DefaultValue="" IsReadOnly="false" Description="">
+            <Rules>
+                <Rule Name="Configuration"/>
+            </Rules>
+        </AttributeInfo>
+        <AttributeInfo DefaultValue="" Description="Location for test related files" IsReadOnly="false"
+                       Name="Test Files Location" Type="String">
+            <Rules>
+                <Rule Name="Configuration"/>
+            </Rules>
+        </AttributeInfo>
+    </Attributes>
+
+    <ResourceFamilies>
+        <ResourceFamily Description="" IsService="true" Name="Traffic Generator Controller" ServiceType="Regular">
+            <AttachedAttributes>
+                <AttachedAttribute IsLocal="true" IsOverridable="true" Name="Test Files Location" UserInput="true">
+                    <AllowedValues/>
+                </AttachedAttribute>
+                <AttachedAttribute Name="User" IsOverridable="true" IsLocal="true"  UserInput="true">
+                    <AllowedValues/>
+                </AttachedAttribute>
+                <AttachedAttribute Name="Password" IsOverridable="true" IsLocal="true"  UserInput="true">
+                    <AllowedValues/>
+                </AttachedAttribute>
+            </AttachedAttributes>
+            <Models>
+                <ResourceModel Description="Cisco TRex controller" Name="Cisco TRex Controller"
+                               SupportsConcurrentCommands="true">
+                    <Drivers>
+                        <DriverName>TRexControllerDriver</DriverName>
+                    </Drivers>
+                </ResourceModel>
+            </Models>
+            <Categories>
+                <Category>Applications</Category>
+            </Categories>
+        </ResourceFamily>
+    </ResourceFamilies>
+
+    <DriverDescriptors>
+        <DriverDescriptor Name="TRexControllerDriver" DriverType="PythonDriver"/>
+    </DriverDescriptors>
+
+</DataModelInfo>
