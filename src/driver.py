@@ -8,6 +8,7 @@ from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterf
 from cloudshell.devices.driver_helper import get_api, get_cli, get_logger_with_thread_id
 
 from trex_controller.runners.trex_server_config_runner import TRexServerConfigurationRunner
+from trex_controller.runners.trex_test_runner import TRexTestRunner
 from trex_controller.helpers.configuration_attributes_structure import TrafficGeneratorControllerResource
 
 
@@ -96,6 +97,12 @@ class TRexControllerDriver(ResourceDriverInterface):
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
 
+            controll_traffic = TRexTestRunner(cli=self._cli,
+                                              resource_config=resource_config,
+                                              logger=logger)
+
+            controll_traffic.start_traffic(test_config=test_file_name)
+
         logger.info("Start traffic command ended")
 
     def stop_traffic(self, context):
@@ -109,6 +116,12 @@ class TRexControllerDriver(ResourceDriverInterface):
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
 
+            controll_traffic = TRexTestRunner(cli=self._cli,
+                                              resource_config=resource_config,
+                                              logger=logger)
+
+            controll_traffic.stop_traffic()
+
         logger.info("Stop traffic command ended")
 
     def get_results(self, context):
@@ -121,8 +134,14 @@ class TRexControllerDriver(ResourceDriverInterface):
             cs_api = get_api(context)
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
+            controll_traffic = TRexTestRunner(cli=self._cli,
+                                              resource_config=resource_config,
+                                              logger=logger)
 
-        logger.info("Get results command ended")
+            res = controll_traffic.get_results()
+
+            logger.info("Get results command ended")
+            return res
 
     def cleanup_reservation(self, context):
         """ Clear reservation when it ends """

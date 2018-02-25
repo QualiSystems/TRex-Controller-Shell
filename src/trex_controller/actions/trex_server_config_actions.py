@@ -4,7 +4,7 @@
 import re
 
 from cloudshell.cli.command_template.command_template_executor import CommandTemplateExecutor
-from trex_controller.command_templates.trex_server_config import DOWNLOAD_FILE_TO_TREX, UPLOAD_FILE_FROM_TREX
+from trex_controller.command_templates.trex_config import DOWNLOAD_FILE_TO_TREX, UPLOAD_FILE_FROM_TREX
 
 TREX_SERVER_CONFIG_FILE = "/etc/trex_cfg.yaml"
 
@@ -24,7 +24,7 @@ class TRexServerConfigActions(object):
 
         output = CommandTemplateExecutor(self._cli_service,
                                          DOWNLOAD_FILE_TO_TREX).execute_command(file_path=TREX_SERVER_CONFIG_FILE,
-                                                                                  url=server_config_url)
+                                                                                url=server_config_url)
 
         if not re.search(r"saved\s*\[\d+\]", output, re.IGNORECASE):
             self._logger.error("Downloading TRex server configuration failed: {}".format(output))
@@ -35,7 +35,7 @@ class TRexServerConfigActions(object):
 
         output = CommandTemplateExecutor(self._cli_service,
                                          UPLOAD_FILE_FROM_TREX).execute_command(file_path=TREX_SERVER_CONFIG_FILE,
-                                                                              url=server_config_url)
+                                                                                url=server_config_url)
 
         if re.search(r"curl:|[Ff]ail|[Ee]rror]", output, re.IGNORECASE):
             self._logger.error("Uploading TRex server configuration failed: {}".format(output))

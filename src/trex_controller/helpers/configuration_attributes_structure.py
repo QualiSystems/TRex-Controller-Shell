@@ -56,6 +56,12 @@ class TrafficGeneratorControllerResource(object):
         """
         return self.attributes.get("{}Test Files Location".format(self.namespace_prefix), "")
 
+    @property
+    def trex_daemon_port(self):
+        """  """
+
+        return self.attributes.get("{}TRex Daemon Port".format(self.namespace_prefix), constants.TREX_DAEMON_PORT)
+
     @staticmethod
     def _get_resource_attribute_value(resource, attribute_name):
         """
