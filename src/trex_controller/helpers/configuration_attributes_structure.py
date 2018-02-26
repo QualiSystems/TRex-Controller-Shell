@@ -63,14 +63,15 @@ class TrafficGeneratorControllerResource(object):
         return self.attributes.get("{}TRex Daemon Port".format(self.namespace_prefix), constants.TREX_DAEMON_PORT)
 
     @staticmethod
-    def _get_resource_attribute_value(resource, attribute_name):
+    def _get_resource_attribute_value(resource, attribute_name, namespace_prefix):
         """
 
         :param resource cloudshell.api.cloudshell_api.ResourceInfo:
         :param str attribute_name:
         """
         for attribute in resource.ResourceAttributes:
-            if attribute.Name.lower() == attribute_name.lower():
+            if attribute.Name.lower() == "{namespace}{attribute_name}".format(namespace=namespace_prefix,
+                                                                              attribute_name=attribute_name).lower():
                 return attribute.Value
 
     @staticmethod
@@ -106,9 +107,17 @@ class TrafficGeneratorControllerResource(object):
         """
         reservation_id = context.reservation.reservation_id
         chassis_resource = cls._get_chassis_model(cs_api=cs_api, reservation_id=reservation_id)
-        username = cls._get_resource_attribute_value(resource=chassis_resource, attribute_name="User")
+        if chassis_resource.ResourceFamilyName in constants.FAMILY_NAME_2G:
+            namespace_prefix = "{}.".format(chassis_resource.ResourceModelName)
+        else:
+            namespace_prefix = ""
+
+        username = cls._get_resource_attribute_value(resource=chassis_resource,
+                                                     attribute_name="User",
+                                                     namespace_prefix=namespace_prefix)
         password = cs_api.DecryptPassword(cls._get_resource_attribute_value(resource=chassis_resource,
-                                                                            attribute_name="Password")).Value
+                                                                            attribute_name="Password",
+                                                                            namespace_prefix=namespace_prefix)).Value
 
         return cls(address=chassis_resource.FullAddress,
                    username=username,

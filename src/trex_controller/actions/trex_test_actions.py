@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
 import re
 
 from cloudshell.cli.command_template.command_template_executor import CommandTemplateExecutor
@@ -33,8 +34,9 @@ class TRexTestActions(object):
             CommandTemplateExecutor(self._cli_service,
                                     MAKE_DIRECTORY).execute_command(path=test_files_location)
 
+        file_name = os.path.basename(test_config_url)
         output = CommandTemplateExecutor(self._cli_service,
-                                         DOWNLOAD_FILE_TO_TREX).execute_command(file_path=test_files_location,
+                                         DOWNLOAD_FILE_TO_TREX).execute_command(file_path=os.path.join(test_files_location, file_name),
                                                                                 url=test_config_url)
 
         if not re.search(r"saved\s*\[\d+\]", output, re.IGNORECASE):

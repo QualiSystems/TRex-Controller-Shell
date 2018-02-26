@@ -38,21 +38,21 @@
                 <Parameter Name="test_file_name" Type="String" Mandatory="True"
                            DisplayName="Test file name"
                            Description="Full name (with extension) of test configuration file"/>
+                <Parameter Name="blocking" Type="Lookup" Mandatory="False" AllowedValues="True,False"
+                           DisplayName="Block" Description="Determine if this method blocks until TRex changes state from 'Starting' to either 'Idle' or 'Running'"
+                           DefaultValue="True"/>
+                <Parameter Name="timeout" Type="Numeric" Mandatory="False"
+                           DisplayName="Timeout" Description="Maximum time (in seconds) to wait in blocking state until TRex changes state from 'Starting' to either 'Idle' or 'Running'"
+                           DefaultValue="40"/>
             </Parameters>
         </Command>
-        <Command Name="stop_traffic" DisplayName="Stop Traffic" Description="Stop running test"/>
+        <Command Name="stop_traffic" DisplayName="Stop Traffic" Description="Stop running test">
+            <Parameters>
+                <Parameter Name="force" Type="Lookup" Mandatory="False" AllowedValues="True,False"
+                           DisplayName="Force" Description="Force killing of running TRex process (if exists) on the server"
+                           DefaultValue="False"/>
+            </Parameters>
+        </Command>
         <Command Name="get_results" DisplayName="Get Result" Description="Get test result file and attach it to the reservation"/>
     </Layout>
 </Driver>
-
-
-
-<!--upload_server_config-->
-<!--download_server_config-->
-<!--load_test_config-->
-<!--start_traffic-->
-<!--stop_traffic-->
-<!--get_results-->
-<!--cleanup_reservation-->
-<!--cleanup-->
-<!--keep_alive-->

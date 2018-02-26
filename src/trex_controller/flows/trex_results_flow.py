@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from cloudshell.traffic.trex.client.trex_client import trex_exceptions
+import time
+
+DEF_TIMEOUT = 5  # in seconds
 
 
 class TRexResultsFlow(object):
@@ -14,7 +16,16 @@ class TRexResultsFlow(object):
         """ Get results """
 
         try:
-            return self._trex_client.get_result_obj()
+            result = self._trex_client.get_result_obj()
+
+            is_running = self._trex_client.is_running(dump_out=dict())
+
+            # while self._trex_client.is_running(dump_out=dict()):
+            while is_running:
+                result = self._trex_client.get_result_obj()
+                time.sleep(DEF_TIMEOUT)
+                is_running = self._trex_client.is_running(dump_out=dict())
+            return result
         except Exception as e:
             self._logger.exception(e)
             raise Exception("Error happened during getting TRex results")
