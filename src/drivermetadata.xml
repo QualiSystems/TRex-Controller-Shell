@@ -41,9 +41,12 @@
                 <Parameter Name="blocking" Type="Lookup" Mandatory="False" AllowedValues="True,False"
                            DisplayName="Block" Description="Determine if this method blocks until TRex changes state from 'Starting' to either 'Idle' or 'Running'"
                            DefaultValue="True"/>
-                <Parameter Name="timeout" Type="Numeric" Mandatory="False"
+                <Parameter Name="timeout" Type="String" Mandatory="False"
                            DisplayName="Timeout" Description="Maximum time (in seconds) to wait in blocking state until TRex changes state from 'Starting' to either 'Idle' or 'Running'"
                            DefaultValue="40"/>
+                <Parameter Name="latency" Type="String" Mandatory="False"
+                           DisplayName="Latency" Description=""
+                           DefaultValue=""/>
             </Parameters>
         </Command>
         <Command Name="stop_traffic" DisplayName="Stop Traffic" Description="Stop running test">
@@ -53,6 +56,6 @@
                            DefaultValue="False"/>
             </Parameters>
         </Command>
-        <Command Name="get_results" DisplayName="Get Result" Description="Get test result file and attach it to the reservation"/>
+        <Command Name="get_results" DisplayName="Get Result" Description="Get test result"/>
     </Layout>
 </Driver>

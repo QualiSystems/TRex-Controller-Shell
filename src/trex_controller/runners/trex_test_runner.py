@@ -63,12 +63,13 @@ class TRexTestRunner(object):
         return self.load_test_config_flow.load_test_config(test_files_location=self._resource_config.test_files_location,
                                                            test_config_url=test_config_url)
 
-    def start_traffic(self, test_config, block_to_success, timeout):
+    def start_traffic(self, test_config, block_to_success, timeout, latency):
         """ Start traffic based on provided test configuration file """
 
         return self.start_traffic_flow.start_traffic(test_config=test_config,
                                                      block_to_success=block_to_success,
-                                                     timeout=timeout)
+                                                     timeout=timeout,
+                                                     latency=latency)
 
     def stop_traffic(self, force):
         """ Stop traffic """

@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from threading import RLock
+
 from cloudshell.core.context.error_handling_context import ErrorHandlingContext
 from cloudshell.shell.core.driver_context import AutoLoadDetails
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
@@ -19,6 +21,7 @@ class TRexControllerDriver(ResourceDriverInterface):
         super(TRexControllerDriver, self).__init__()
         self._cli = None
         self._trex_client = None
+        self.lock = RLock()
 
     def initialize(self, context):
         """
@@ -26,14 +29,11 @@ class TRexControllerDriver(ResourceDriverInterface):
         :type context:  context: cloudshell.shell.core.driver_context.ResourceRemoteCommandContext
         """
 
-        cs_api = get_api(context)
-        resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
-                                                                                          cs_api=cs_api)
+        resource_config = TrafficGeneratorControllerResource.from_context(context)
         session_pool_size = int(resource_config.sessions_concurrency_limit)
         self._cli = get_cli(session_pool_size)
 
-        self._trex_client = CTRexClient(trex_host=resource_config.address,
-                                        trex_daemon_port=resource_config.trex_daemon_port)
+        return 'Finished initializing'
 
     def get_inventory(self, context):
         """
@@ -43,6 +43,15 @@ class TRexControllerDriver(ResourceDriverInterface):
         :rtype: cloudshell.shell.core.driver_context.AutoLoadDetails
         """
         return AutoLoadDetails([], [])
+
+    def _get_trex_client(self, resource_config):
+
+        with self.lock:
+            if self._trex_client is None:
+                self._trex_client = CTRexClient(trex_host=resource_config.address,
+                                                trex_daemon_port=resource_config.trex_daemon_port)
+
+            return self._trex_client
 
     def upload_server_config(self, context, config_file_url):
         """ Upload server configuration file to FTP/TFTP Server """
@@ -92,8 +101,10 @@ class TRexControllerDriver(ResourceDriverInterface):
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
 
+            trex_client = self._get_trex_client(resource_config=resource_config)
+
             controll_traffic = TRexTestRunner(cli=self._cli,
-                                              trex_client=self._trex_client,
+                                              trex_client=trex_client,
                                               resource_config=resource_config,
                                               logger=logger)
 
@@ -101,7 +112,7 @@ class TRexControllerDriver(ResourceDriverInterface):
 
         logger.info("Load test configuration file command ended")
 
-    def start_traffic(self, context, test_file_name, blocking, timeout):
+    def start_traffic(self, context, test_file_name, blocking, timeout, latency):
         """ Start traffic """
 
         logger = get_logger_with_thread_id(context)
@@ -119,9 +130,13 @@ class TRexControllerDriver(ResourceDriverInterface):
 
             blocking = (blocking == "True")
 
+            if latency:
+                latency = int(latency)
+
             controll_traffic.start_traffic(test_config=test_file_name,
                                            block_to_success=blocking,
-                                           timeout=float(timeout))
+                                           timeout=float(timeout),
+                                           latency=latency)
 
         logger.info("Start traffic command ended")
 
@@ -136,8 +151,10 @@ class TRexControllerDriver(ResourceDriverInterface):
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
 
+            trex_client = self._get_trex_client(resource_config=resource_config)
+
             controll_traffic = TRexTestRunner(cli=self._cli,
-                                              trex_client=self._trex_client,
+                                              trex_client=trex_client,
                                               resource_config=resource_config,
                                               logger=logger)
 
@@ -156,15 +173,18 @@ class TRexControllerDriver(ResourceDriverInterface):
             cs_api = get_api(context)
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
+
+            trex_client = self._get_trex_client(resource_config=resource_config)
+
             controll_traffic = TRexTestRunner(cli=self._cli,
-                                              trex_client=self._trex_client,
+                                              trex_client=trex_client,
                                               resource_config=resource_config,
                                               logger=logger)
 
             res = controll_traffic.get_results()
 
             logger.info("Get results command ended")
-            return res
+            return str(res)
 
     def cleanup_reservation(self, context):
         """ Clear reservation when it ends """
@@ -196,83 +216,3 @@ class TRexControllerDriver(ResourceDriverInterface):
                                                                                               cs_api=cs_api)
 
         logger.info("Keep alive command ended")
-
-
-if __name__ == "__main__":
-    import mock
-    import time
-    from cloudshell.shell.core.context import ResourceCommandContext, ResourceContextDetails, ReservationContextDetails
-    from cloudshell.api.cloudshell_api import CloudShellAPISession
-
-    address = '192.168.65.78'
-    # address = '192.168.65.143'
-
-    user = 'root'
-    password = 'Password1'
-    auth_key = 'h8WRxvHoWkmH8rLQz+Z/pg=='
-    api_port = 8029
-
-    context = ResourceCommandContext()
-    context.resource = ResourceContextDetails()
-    context.resource.name = 'TRex'
-    context.resource.fullname = 'Cisco TRex'
-    context.reservation = ReservationContextDetails()
-    # context.reservation.reservation_id = 'feb2e0a3-0779-4719-a336-5379671b445b'
-    context.reservation.reservation_id = '7b9ca795-be63-4a0a-9418-2a6957291a39'
-    context.resource.attributes = {}
-    context.resource.attributes['User'] = user
-    context.resource.attributes['Password'] = password
-    context.resource.attributes["CLI TCP Port"] = 22
-    context.resource.attributes["CLI Connection Type"] = "ssh"
-    context.resource.attributes["Sessions Concurrency Limit"] = 1
-    context.resource.attributes["Test Files Location"] = "D:\\"
-    context.resource.address = address
-
-    context.connectivity = mock.MagicMock()
-    context.connectivity.server_address = "192.168.85.17"
-
-    dr = TRexControllerDriver()
-
-    api = session = CloudShellAPISession("192.168.85.17", "admin", "admin", "Global", port=8029)
-
-    with mock.patch('__main__.get_api') as get_api:
-        # get_api.return_value = type('api', (object,), {
-        #     'DecryptPassword': lambda self, pw: type('Password', (object,), {'Value': pw})()})()
-
-        get_api.return_value = api
-        dr.initialize(context)
-        # dr.load_test_config(context=context, config_file_url="extend_command.py")
-        # dr.load_test_config(context=context, config_file_url="ftp://quali:Password1@192.168.85.17/test_config/sfr_delay_10_1g.yaml")
-        # print dr.get_results(context=context)
-        # dr.start_traffic(context=context, test_file_name="sfr_delay_10_1g.yaml", blocking="True", timeout="2")
-
-        # time.sleep(40)
-
-        dr.stop_traffic(context=context, force="False")
-        # print dr.get_results(context=context)
-    #
-    #     # out = dr.get_inventory(context)
-    #     #
-    #     # for xx in out.resources:
-    #     #     print xx.__dict__
-    #
-    #     out = dr.load_config(context, "TestConfig.xml")
-    #
-    #     print(out)
-
-    # with mock.patch('__main__.get_api') as get_api:
-    #     get_api.return_value = type('api', (object,), {
-    #         'DecryptPassword': lambda self, pw: type('Password', (object,), {'Value': pw})()})()
-
-    # out = dr.get_inventory(context)
-    #
-    # for xx in out.resources:
-    #     print xx.__dict__
-
-    # out = dr.load_config(context, "CS_TEST.xml")
-    # out = dr.start_traffic(context)
-    # out = dr.stop_traffic(context)
-    # out = dr.get_results(context)
-    # out = dr.cleanup_reservation(context)
-
-    # print(out)

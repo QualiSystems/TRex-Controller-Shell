@@ -10,7 +10,7 @@ class TRexTrafficControlFlow(object):
         self._logger = logger
         self._trex_client = trex_client
 
-    def start_traffic(self, test_config, block_to_success=True, timeout=40):
+    def start_traffic(self, test_config, block_to_success=True, timeout=40, latency=1000):
         """ Start traffic based on provided test configuration file """
 
         if not test_config.startswith("./") and not test_config.startswith("/"):
@@ -23,6 +23,8 @@ class TRexTrafficControlFlow(object):
             self._logger.info("Start TRex timeout changed to 40 seconds")
 
         run_params = dict(d=5, f=test_config, block_to_success=block_to_success, timeout=timeout)
+        if latency:
+            run_params.update(dict(l=latency))
 
         try:
             res = self._trex_client.start_trex(**run_params)
