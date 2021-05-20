@@ -3,5 +3,5 @@ shell:
     author: Alexey
     email: alexey.b@quali.com
     description: Cisco TRex Controller Shell
-    version: 1.0.0
+    version: 1.0.1
     driver_name: TRexControllerDriver
