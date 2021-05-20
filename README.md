@@ -1,19 +1,12 @@
-# BreakingPoint-Controller-Shell
-![alt tag](https://travis-ci.org/QualiSystems/BreakingPoint-Controller-Shell.svg?branch=dev)
-[![Coverage Status](https://coveralls.io/repos/github/QualiSystems/BreakingPoint-Controller-Shell/badge.svg?branch=dev)](https://coveralls.io/github/QualiSystems/BreakingPoint-Controller-Shell?branch=dev)
-[![PyPI version](https://badge.fury.io/py/BreakingPoint-Controller-Shell.svg)](https://badge.fury.io/py/BreakingPoint-Controller-Shell)
-[![Dependency Status](https://dependencyci.com/github/QualiSystems/BreakingPoint-Controller-Shell/badge)](https://dependencyci.com/github/QualiSystems/BreakingPoint-Controller-Shell)
-[![Stories in Ready](https://badge.waffle.io/QualiSystems/BreakingPoint-Controller-Shell.svg?label=ready&title=Ready)](http://waffle.io/QualiSystems/BreakingPoint-Controller-Shell)
-
 ![](https://github.com/QualiSystems/cloudshell-shells-documentaion-templates/blob/master/cloudshell_logo.png)
 
 # **Cisco TRex Shells**  
 
-Release date: March 2018
+Release date: May 2021
 
-Shell version: 1.0.0
+Shell version: 1.0.1
 
-Document version: 1.0
+Document version: 1.1
 
 # In This Guide
 
