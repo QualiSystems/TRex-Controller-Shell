@@ -122,6 +122,8 @@ class TRexControllerDriver(ResourceDriverInterface):
             cs_api = get_api(context)
             resource_config = TrafficGeneratorControllerResource.create_from_chassis_resource(context=context,
                                                                                               cs_api=cs_api)
+            
+            trex_client = self._get_trex_client(resource_config=resource_config)
 
             controll_traffic = TRexTestRunner(cli=self._cli,
                                               trex_client=self._trex_client,
