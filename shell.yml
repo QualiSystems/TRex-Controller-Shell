@@ -1,7 +1,7 @@
 shell:
     name: trex_controller_shell
-    author: Alexey
-    email: alexey.b@quali.com
+    author: Quali
+    email: info@qualisystems.com
     description: Cisco TRex Controller Shell
     version: 1.0.1
     driver_name: TRexControllerDriver
